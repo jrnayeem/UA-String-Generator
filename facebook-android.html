@@ -1,69 +1,84 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Facebook Android UA Generator</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      background: #020617;
-      color: #fff;
-      margin: 0;
-      padding: 0;
-    }
-    .container {
-      max-width: 900px;
-      margin: 40px auto;
-      padding: 20px;
-      background: #0f172a;
-      border-radius: 14px;
-    }
-    h1 {
-      text-align: center;
-      color: #38bdf8;
-    }
-    a.back {
-      color: #22c55e;
-      text-decoration: none;
-      font-weight: bold;
-      display: inline-block;
-      margin-bottom: 15px;
-    }
-    select, input, button, textarea {
-      width: 100%;
-      margin: 10px 0;
-      padding: 12px;
-      border-radius: 8px;
-      border: none;
-      font-size: 16px;
-    }
-    button {
-      background: #22c55e;
-      cursor: pointer;
-      font-weight: bold;
-    }
-    textarea {
-      height: 280px;
-      background: #020617;
-      color: #00ff9c;
-      border: 1px solid #1e293b;
-      resize: none;
-    }
-    .buttons {
-      display: flex;
-      gap: 10px;
-    }
-    .buttons button {
-      flex: 1;
-    }
-  </style>
+<meta charset="UTF-8">
+<title>Facebook Android UA Generator</title>
+<style>
+body {
+  font-family: Arial, sans-serif;
+  background: #020617;
+  color: #fff;
+  margin: 0;
+  padding: 0;
+}
+.container {
+  max-width: 900px;
+  margin: 40px auto;
+  padding: 20px;
+  background: #0f172a;
+  border-radius: 14px;
+}
+h1 {
+  text-align: center;
+  color: #38bdf8;
+}
+a.back {
+  color: #22c55e;
+  text-decoration: none;
+  font-weight: bold;
+  display: inline-block;
+  margin-bottom: 15px;
+}
+select, input, button {
+  width: 100%;
+  margin: 10px 0;
+  padding: 12px;
+  border-radius: 8px;
+  border: none;
+  font-size: 16px;
+}
+button {
+  background: #22c55e;
+  cursor: pointer;
+  font-weight: bold;
+  color: #000;
+}
+.output {
+  margin-top: 15px;
+}
+.ua-item {
+  background: #020617;
+  border: 1px solid #1e293b;
+  padding: 12px;
+  margin-bottom: 10px;
+  border-radius: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.ua-text {
+  word-break: break-all;
+  font-size: 13px;
+  line-height: 1.4;
+  color: #00ff9c;
+}
+.ua-copy-btn {
+  width: 90px;
+}
+.buttons-row {
+  display: flex;
+  gap: 10px;
+}
+.buttons-row button {
+  flex: 1;
+}
+</style>
 </head>
 <body>
 
 <div class="container">
   <a href="index.html" class="back">← Back to Home</a>
-
-  <h1>📘 Facebook Android UA Generator</h1>
+  <h1>Facebook Android UA Generator</h1>
 
   <label>Select Brand</label>
   <select id="brand">
@@ -94,42 +109,210 @@
   </select>
 
   <label>Quantity</label>
-  <input type="number" id="qty" value="50" min="1" max="2000">
+  <input type="number" id="qty" value="20" min="1" max="2000">
 
-  <div class="buttons">
+  <div class="buttons-row">
     <button onclick="generateUA()">Generate</button>
-    <button onclick="copyUA()">Copy All</button>
+    <button onclick="copyAll()">Copy All</button>
+    <button onclick="exportTXT()">Export .txt</button>
   </div>
 
-  <textarea id="output" readonly></textarea>
+  <div id="output" class="output"></div>
 </div>
 
 <script>
 const DEVICES = {
   Samsung: [
     {model:"SM-S928B", android:"14", build:"UP1A.231005.007"},
-    {model:"SM-S921B", android:"14", build:"UP1A.231005.007"},
-    {model:"SM-A546B", android:"14", build:"UP1A.231005.007"},
-    {model:"SM-G998B", android:"13", build:"TP1A.220624.014"}
+	{model:"SM-S921B", android:"14", build:"UP1A.231005.007"},
+	{model:"SM-S926B", android:"14", build:"UP1A.231005.007"},
+	{model:"SM-S918B", android:"14", build:"UP1A.231005.007"},
+	{model:"SM-S916B", android:"14", build:"UP1A.231005.007"},
+	{model:"SM-S911B", android:"14", build:"UP1A.231005.007"},
+	{model:"SM-S908B", android:"13", build:"TP1A.220624.014"},
+	{model:"SM-S906B", android:"13", build:"TP1A.220624.014"},
+	{model:"SM-S901B", android:"13", build:"TP1A.220624.014"},
+
+	{model:"SM-F946B", android:"14", build:"UP1A.231005.007"},
+	{model:"SM-F741B", android:"14", build:"UP1A.231005.007"},
+	{model:"SM-F731B", android:"14", build:"UP1A.231005.007"},
+
+	{model:"SM-A556B", android:"14", build:"UP1A.231005.007"},
+	{model:"SM-A546B", android:"14", build:"UP1A.231005.007"},
+	{model:"SM-A536B", android:"13", build:"TP1A.220624.014"},
+	{model:"SM-A346B", android:"14", build:"UP1A.231005.007"},
+	{model:"SM-A336B", android:"13", build:"TP1A.220624.014"},
+	{model:"SM-A276B", android:"13", build:"TP1A.220624.014"},
+	{model:"SM-A256E", android:"14", build:"UP1A.231005.007"},
+	{model:"SM-A245F", android:"13", build:"TP1A.220624.014"},
+	{model:"SM-A146B", android:"13", build:"TP1A.220624.014"},
+	{model:"SM-A136B", android:"12", build:"SP1A.210812.016"},
+	{model:"SM-A125F", android:"11", build:"RP1A.200720.012"},
+	{model:"SM-A055F", android:"11", build:"RP1A.200720.012"},
+
+	{model:"SM-M556B", android:"14", build:"UP1A.231005.007"},
+	{model:"SM-M546B", android:"13", build:"TP1A.220624.014"},
+	{model:"SM-M536B", android:"13", build:"TP1A.220624.014"},
+	{model:"SM-M346B", android:"13", build:"TP1A.220624.014"},
+	{model:"SM-M336B", android:"12", build:"SP1A.210812.016"},
+	{model:"SM-M146B", android:"13", build:"TP1A.220624.014"},
+
+	{model:"SM-G998B", android:"13", build:"TP1A.220624.014"},
+	{model:"SM-G991B", android:"13", build:"TP1A.220624.014"},
+	{model:"SM-G988B", android:"11", build:"RP1A.200720.012"},
+	{model:"SM-G986B", android:"11", build:"RP1A.200720.012"},
+	{model:"SM-G781B", android:"11", build:"RP1A.200720.012"},
+	{model:"SM-G990B", android:"12", build:"SP1A.210812.016"},
+
+	{model:"SM-F711B", android:"12", build:"SP1A.210812.016"}
+
   ],
   Xiaomi: [
-    {model:"23127PN0CC", android:"14", build:"UKQ1.230804.001"}
+    {model:"23127PN0CC", android:"14", build:"UKQ1.230804.001"},
+	{model:"23116PN5BC", android:"14", build:"UKQ1.230804.001"},
+	{model:"2210132C", android:"13", build:"TKQ1.220829.002"},
+	{model:"2211133C", android:"13", build:"TKQ1.220829.002"},
+	{model:"23078PND5G", android:"13", build:"TKQ1.220829.002"},
+	{model:"23049PCD8G", android:"13", build:"TKQ1.220829.002"},
+	{model:"23013PC75G", android:"13", build:"TKQ1.220829.002"},
+	{model:"2201122C", android:"12", build:"SKQ1.211006.001"},
+	{model:"2201123C", android:"12", build:"SKQ1.211006.001"},
+	{model:"M2102K1C", android:"11", build:"RKQ1.200826.002"},
+	{model:"M2102J2SC", android:"11", build:"RKQ1.200826.002"},
+	{model:"M2012K11AC", android:"11", build:"RKQ1.200826.002"},
+	{model:"2106118C", android:"11", build:"RKQ1.200826.002"},
+	{model:"M2101K9C", android:"11", build:"RKQ1.200826.002"},
+	{model:"2306EPN60G", android:"13", build:"TKQ1.220829.002"},
+	{model:"22101316G", android:"13", build:"TKQ1.220829.002"},
+	{model:"2203129G", android:"12", build:"SKQ1.211006.001"}
+
   ],
   Redmi: [
-    {model:"2312DRA50C", android:"13", build:"TKQ1.220829.002"}
-  ]
+    {model:"2312DRA50C", android:"13", build:"TKQ1.220829.002"},
+	{model:"2312DRA50G", android:"13", build:"TKQ1.220829.002"},
+	{model:"23021RAAEG", android:"13", build:"TKQ1.220829.002"},
+	{model:"22101316G", android:"13", build:"TKQ1.220829.002"},
+	{model:"22101316UCP", android:"13", build:"TKQ1.220829.002"},
+	{model:"2201117TY", android:"12", build:"SKQ1.211006.001"},
+	{model:"2201117TG", android:"12", build:"SKQ1.211006.001"},
+	{model:"2201117TL", android:"12", build:"SKQ1.211006.001"},
+	{model:"M2101K6G", android:"11", build:"RKQ1.200826.002"},
+	{model:"M2101K7AI", android:"11", build:"RKQ1.200826.002"},
+	{model:"M2101K7AG", android:"11", build:"RKQ1.200826.002"},
+	{model:"23076RN8DY", android:"13", build:"TKQ1.220829.002"},
+	{model:"220733SL", android:"12", build:"SKQ1.211006.001"},
+	{model:"220733SG", android:"12", build:"SKQ1.211006.001"},
+	{model:"21091116AG", android:"11", build:"RKQ1.200826.002"}
+
+  ],
+  
+  Vivo: [
+    {model:"V2309A", android:"14", build:"UP1A.231005.007"},
+	{model:"V2309", android:"14", build:"UP1A.231005.007"},
+	{model:"V2241A", android:"13", build:"TP1A.220624.014"},
+	{model:"V2219A", android:"13", build:"TP1A.220624.014"},
+	{model:"V2250", android:"13", build:"TP1A.220624.014"},
+	{model:"V2254", android:"13", build:"TP1A.220624.014"},
+	{model:"V2236", android:"13", build:"TP1A.220624.014"},
+	{model:"V2237", android:"13", build:"TP1A.220624.014"},
+	{model:"V2225", android:"13", build:"TP1A.220624.014"},
+	{model:"V2203", android:"12", build:"SP1A.210812.016"},
+	{model:"V2199A", android:"12", build:"SP1A.210812.016"},
+	{model:"V2154A", android:"12", build:"SP1A.210812.016"},
+	{model:"V2170A", android:"12", build:"SP1A.210812.016"},
+	{model:"V2145A", android:"12", build:"SP1A.210812.016"},
+	{model:"V2202", android:"12", build:"SP1A.210812.016"},
+	{model:"V2201", android:"12", build:"SP1A.210812.016"},
+	{model:"V2118A", android:"11", build:"RP1A.200720.012"},
+	{model:"V2055A", android:"11", build:"RP1A.200720.012"},
+	{model:"V2059A", android:"11", build:"RP1A.200720.012"},
+	{model:"V2046A", android:"11", build:"RP1A.200720.012"}
+
+  ],
+  
+  
+  Oppo: [
+    {model:"PHZ110", android:"14", build:"UKQ1.230924.001"},
+	{model:"PHY110", android:"14", build:"UKQ1.230924.001"},
+	{model:"PJV110", android:"14", build:"UKQ1.230924.001"},
+	{model:"CPH2599", android:"14", build:"UKQ1.230924.001"},
+	{model:"CPH2499", android:"13", build:"TP1A.220905.001"},
+	{model:"CPH2437", android:"13", build:"TP1A.220905.001"},
+	{model:"PGT110", android:"13", build:"TP1A.220905.001"},
+	{model:"CPH2529", android:"13", build:"TP1A.220905.001"},
+	{model:"CPH2483", android:"13", build:"TP1A.220905.001"},
+	{model:"CPH2477", android:"13", build:"TP1A.220905.001"},
+	{model:"PFZM10", android:"12", build:"SP1A.210812.016"},
+	{model:"CPH2357", android:"12", build:"SP1A.210812.016"},
+	{model:"CPH2359", android:"12", build:"SP1A.210812.016"},
+	{model:"CPH2387", android:"12", build:"SP1A.210812.016"},
+	{model:"CPH2385", android:"12", build:"SP1A.210812.016"},
+	{model:"CPH2269", android:"11", build:"RP1A.200720.011"},
+	{model:"CPH2375", android:"11", build:"RP1A.200720.011"},
+	{model:"CPH2349", android:"11", build:"RP1A.200720.011"},
+	{model:"CPH2239", android:"11", build:"RP1A.200720.011"},
+	{model:"CPH2285", android:"11", build:"RP1A.200720.011"}
+
+  ],
+  
+  Realme: [
+    {model:"RMX3851", android:"14", build:"UP1A.231005.007"},
+	{model:"RMX3840", android:"14", build:"UP1A.231005.007"},
+	{model:"RMX3842", android:"14", build:"UP1A.231005.007"},
+	{model:"RMX3820", android:"13", build:"TP1A.220905.001"},
+	{model:"RMX3771", android:"13", build:"TP1A.220905.001"},
+	{model:"RMX3761", android:"13", build:"TP1A.220905.001"},
+	{model:"RMX3741", android:"13", build:"TP1A.220905.001"},
+	{model:"RMX3706", android:"13", build:"TP1A.220905.001"},
+	{model:"RMX3561", android:"12", build:"SP1A.210812.016"},
+	{model:"RMX3392", android:"12", build:"SP1A.210812.016"},
+	{model:"RMX3471", android:"12", build:"SP1A.210812.016"},
+	{model:"RMX3312", android:"12", build:"SP1A.210812.016"},
+	{model:"RMX3301", android:"12", build:"SP1A.210812.016"},
+	{model:"RMX3360", android:"11", build:"RP1A.200720.011"},
+	{model:"RMX3031", android:"11", build:"RP1A.200720.011"},
+	{model:"RMX3231", android:"11", build:"RP1A.200720.011"},
+	{model:"RMX3265", android:"11", build:"RP1A.200720.011"},
+	{model:"RMX3511", android:"11", build:"RP1A.200720.011"},
+	{model:"RMX3501", android:"11", build:"RP1A.200720.011"},
+	{model:"RMX3581", android:"12", build:"SP1A.210812.016"}
+
+  ],
+  
+  Honor: [
+    {model:"BVL-N49", android:"14", build:"8.0.0.128"},
+	{model:"PGT-N19", android:"13", build:"7.1.0.168"},
+	{model:"VER-N49", android:"13", build:"7.2.0.118"},
+	{model:"FNE-N49", android:"12", build:"6.1.0.158"},
+	{model:"REA-NX9", android:"13", build:"7.1.0.183"},
+	{model:"CRT-NX1", android:"13", build:"7.1.0.148"},
+	{model:"RMO-NX1", android:"13", build:"7.1.0.128"},
+	{model:"LGE-NX9", android:"12", build:"6.0.0.138"},
+	{model:"ANY-NX1", android:"11", build:"4.2.0.190"},
+	{model:"TFY-LX1", android:"11", build:"4.2.0.190"},
+	{model:"MNE-LX1", android:"11", build:"4.2.0.190"},
+	{model:"NTN-LX1", android:"11", build:"4.2.0.190"},
+	{model:"RKY-LX1", android:"11", build:"4.2.0.190"},
+	{model:"CLK-LX1", android:"13", build:"7.1.0.128"},
+	{model:"WOD-LX1", android:"13", build:"7.1.0.128"}
+
+
+  ],
+  
 };
 
 const chromeVersions = {
-  "12-13": ["139.0.7336.80","140.0.7390.63"],
-  "14": ["141.0.7441.43","142.0.7511.173"],
-  "15": ["143.0.7562.52"]
+  "12-13": ["139.0.7336.80", "139.0.7338.103", "140.0.7390.63", "140.0.7391.122"],
+   "14": ["141.0.7441.43", "141.0.7442.103", "142.0.7509.122", "142.0.7511.173"],
+   "15": ["142.0.7509.122", "142.0.7511.173", "143.0.7562.52", "143.0.7563.80"]
 };
 
 const fbVersions = [
-  {FBAV:"541.0.0.85.79"},
-  {FBAV:"540.0.0.49.148"},
-  {FBAV:"539.0.0.54.69"}
+	"541.0.0.85.79",
+	"541.0.0.94.102",
+	"540.0.0.49.148",
+	"539.0.0.54.69",
+	"538.0.0.53.70",
 ];
 
 const countryLocaleMap = {
@@ -144,7 +327,7 @@ const countryLocaleMap = {
 
 const fallbackLocales = ["en_US","en_GB","fr_FR","de_DE","es_ES"];
 
-function rand(arr){return arr[Math.floor(Math.random()*arr.length)];}
+function rand(arr){ return arr[Math.floor(Math.random()*arr.length) ]; }
 
 function pickChrome(ver){
   if(ver==="15") return rand(chromeVersions["15"]);
@@ -153,9 +336,7 @@ function pickChrome(ver){
 }
 
 function getDevices(brand){
-  if(brand==="all"){
-    return Object.values(DEVICES).flat();
-  }
+  if(brand==="all") return Object.values(DEVICES).flat();
   return DEVICES[brand] || [];
 }
 
@@ -165,12 +346,16 @@ function pickLocale(){
   return countryLocaleMap[country] || "en_US";
 }
 
+let generatedUAs = [];
+
 function generateUA(){
   const brand = document.getElementById("brand").value;
   const qty = parseInt(document.getElementById("qty").value);
   const devices = getDevices(brand);
+  const output = document.getElementById("output");
 
-  let out = [];
+  output.innerHTML = "";
+  generatedUAs = [];
 
   for(let i=0;i<qty;i++){
     const d = rand(devices);
@@ -178,18 +363,42 @@ function generateUA(){
     const chrome = pickChrome(d.android);
     const locale = pickLocale();
 
-    out.push(
-`Mozilla/5.0 (Linux; Android ${d.android}; ${d.model} Build/${d.build}; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/${chrome} Mobile Safari/537.36 [FB_IAB/FB4A;FBAV/${fb.FBAV};FBLC/${locale};IABMV/1;]`
-    );
-  }
+    const ua =
+`Mozilla/5.0 (Linux; Android ${d.android}; ${d.model} Build/${d.build}; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/${chrome} Mobile Safari/537.36 [FB_IAB/FB4A;FBAV/${fb};FBLC/${locale};IABMV/1;]`;
 
-  document.getElementById("output").value = out.join("\n");
+    generatedUAs.push(ua);
+
+    const card = document.createElement("div");
+    card.className = "ua-item";
+
+    const btn = document.createElement("button");
+    btn.className = "ua-copy-btn";
+    btn.innerText = "Copy";
+    btn.onclick = () => navigator.clipboard.writeText(ua);
+
+    const text = document.createElement("div");
+    text.className = "ua-text";
+    text.textContent = ua;
+
+    card.appendChild(btn);
+    card.appendChild(text);
+    output.appendChild(card);
+  }
 }
 
-function copyUA(){
-  const ta = document.getElementById("output");
-  ta.select();
-  document.execCommand("copy");
+function copyAll(){
+  if(generatedUAs.length===0) return alert("Nothing to copy");
+  navigator.clipboard.writeText(generatedUAs.join("\n"));
+  alert("Copied all ✅");
+}
+
+function exportTXT(){
+  if(generatedUAs.length===0) return alert("Nothing to export");
+  const blob = new Blob([generatedUAs.join("\n")], {type:"text/plain"});
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = "facebook_android_ua.txt";
+  a.click();
 }
 </script>
 
