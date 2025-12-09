@@ -35,18 +35,25 @@
       font-size: 20px;
       font-weight: bold;
       transition: 0.2s;
+	  box-shadow: 0 4px 12px rgba(0,0,0,0.4);
     }
     .card:hover {
       background: #1e293b;
       transform: scale(1.03);
     }
+	
+	@media (max-width: 500px){
+  .container { margin: 30px 15px; }
+}
+
   </style>
 </head>
 <body>
   <div class="container">
     <h1>UA Generator Platform</h1>
     <div class="grid">
-      <a href="facebook-android.html" class="card">📘 Facebook Android UA</a>
+      <a href="facebook-android.html" class="card">📘 Android Facebook UA</a>
+	  <a href="iOS-Facebook.html" class="card">📱 iOS Facebook UA</a>
       <a href="instagram-android.html" class="card">📸 Instagram Android UA</a>
       <a href="windows.html" class="card">🖥️ Windows UA (Coming Soon)</a>
     </div>
