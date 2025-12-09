@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Facebook iOS UA Generator</title>
+<style>
+body {
+  font-family: Arial, sans-serif;
+  background: #020617;
+  color: #fff;
+  margin: 0;
+  padding: 0;
+}
+.container {
+  max-width: 900px;
+  margin: 40px auto;
+  padding: 20px;
+  background: #0f172a;
+  border-radius: 14px;
+}
+h1 {
+  text-align: center;
+  color: #38bdf8;
+}
+a.back {
+  color: #22c55e;
+  text-decoration: none;
+  font-weight: bold;
+  display: inline-block;
+  margin-bottom: 15px;
+}
+select, input, button {
+  width: 100%;
+  margin: 10px 0;
+  padding: 12px;
+  border-radius: 8px;
+  border: none;
+  font-size: 16px;
+}
+button {
+  background: #22c55e;
+  cursor: pointer;
+  font-weight: bold;
+  color: #000;
+}
+.output {
+  margin-top: 15px;
+}
+.ua-item {
+  background: #020617;
+  border: 1px solid #1e293b;
+  padding: 12px;
+  margin-bottom: 10px;
+  border-radius: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.ua-text {
+  word-break: break-all;
+  font-size: 13px;
+  line-height: 1.4;
+  color: #00ff9c;
+}
+.ua-copy-btn {
+  width: 90px;
+}
+.buttons-row {
+  display: flex;
+  gap: 10px;
+}
+.buttons-row button {
+  flex: 1;
+}
+</style>
+</head>
+<body>
+
+<div class="container">
+	<a href="index.html" class="back">← Back to Home</a>
+	<h1>Facebook iOS UA Generator</h1>
+
+  <label>Select iPhone Model</label>
+  <select id="model"></select>
+
+  <label>Select Country</label>
+  <select id="country">
+    <option value="auto">Auto / Random</option>
+    <option value="US">United States</option>
+    <option value="UK">United Kingdom</option>
+    <option value="BD">Bangladesh</option>
+    <option value="IN">India</option>
+    <option value="FR">France</option>
+    <option value="DE">Germany</option>
+    <option value="ES">Spain</option>
+  </select>
+
+  <label>Quantity</label>
+  <input type="number" id="qty" value="20" min="1" max="2000">
+
+  <div class="buttons-row">
+    <button onclick="generateUA()">Generate</button>
+    <button onclick="copyAll()">Copy All</button>
+    <button onclick="exportTXT()">Export .txt</button>
+  </div>
+
+  <div id="output" class="output"></div>
+</div>
+
+<script>
+const device_ios_ranges = {
+  "iPhone12,1": ["iPhone 11", "14.0","17.5.1"], "iPhone12,3":["iPhone 11 Pro","14.0","17.5.1"], "iPhone12,5":["iPhone 11 Pro Max","14.0","17.5.1"],
+  "iPhone13,1":["iPhone 12 mini","14.1","17.5.1"], "iPhone13,2":["iPhone 12","14.1","17.5.1"], "iPhone13,3":["iPhone 12 Pro","14.1","17.5.1"], "iPhone13,4":["iPhone 12 Pro Max","14.1","17.5.1"],
+  "iPhone14,4":["iPhone 13 mini","15.1","17.5.1"], "iPhone14,5":["iPhone 13","15.1","17.5.1"], "iPhone14,2":["iPhone 13 Pro","15.1","17.5.1"], "iPhone14,3":["iPhone 13 Pro Max","15.1","17.5.1"],
+  "iPhone15,2":["iPhone 14 Pro","16.0","17.5.1"], "iPhone15,3":["iPhone 14 Pro Max","16.0","17.5.1"], "iPhone15,4":["iPhone 15","17.0","17.5.1"], "iPhone15,5":["iPhone 15 Plus","17.0","17.5.1"],
+  "iPhone16,1":["iPhone 15 Pro","17.6","17.6.1"], "iPhone16,2":["iPhone 15 Pro Max","17.6","17.6.1"], "iPhone16,3":["iPhone 16 Pro","17.6","17.6.1"], "iPhone16,4":["iPhone 16 Pro Max","17.6","17.6.1"]
+};
+
+const ios_versions = [
+  ["14.0","18A373","605.1.15"],["14.1","18A8395","605.1.15"],["14.2","18B92","605.1.15"],["14.3","18C66","605.1.15"],["14.4","18D52","605.1.15"],["14.4.1","18D61","605.1.15"],
+  ["14.4.2","18D70","605.1.15"],["14.5","18E199","605.1.15"],["14.5.1","18E212","605.1.15"],["14.6","18F72","605.1.15"],["14.7","18G69","605.1.15"],["14.7.1","18G82","605.1.15"],
+  ["14.8","18H17","605.1.15"],["14.8.1","18H107","605.1.15"],["15.0","19A346","605.1.15"],["15.0.1","19A404","605.1.15"],["15.1","19B74","605.1.15"],["15.1.1","19B81","605.1.15"],
+  ["15.2","19C56","605.1.15"],["15.2.1","19C63","605.1.15"],["15.3","19D50","605.1.15"],["15.4","19E241","605.1.15"],["15.4.1","19E258","605.1.15"],["15.5","19F77","605.1.15"],
+  ["15.6","19G71","605.1.15"],["15.6.1","19G82","605.1.15"],["16.0","20A362","605.1.15"],["16.1","20B79","605.1.15"],["16.1.1","20B100","605.1.15"],["16.2","20C65","605.1.15"],
+  ["16.3","20D47","605.1.15"],["16.3.1","20D67","605.1.15"],["16.4","20E240","605.1.15"],["16.4.1","20E252","605.1.15"],["16.5","20F66","605.1.15"],["17.0","21A329","605.1.15"],
+  ["17.0.1","21A340","605.1.15"],["17.0.2","21A351","605.1.15"],["17.0.3","21A362","605.1.15"],["17.1","21B74","605.1.15"],["17.1.1","21B91","605.1.15"],["17.1.2","21B101","605.1.15"],
+  ["17.2","21C62","605.1.15"],["17.2.1","21C71","605.1.15"],["17.3","21D50","605.1.15"],["17.3.1","21D61","605.1.15"],["17.4","21E219","605.1.15"],["17.4.1","21E236","605.1.15"],
+  ["17.5","21F79","605.1.15"],["17.5.1","21F90","605.1.15"]
+];
+
+const fb_versions = {
+  "524.1.0.47.100":"771349287",        
+  "523.0.0.38.95":"766554692",
+  "521.0.0.38.98":"760232234",
+  "520.0.0.38.101":"756351453",
+  "519.0.0.33.99":"752967443"
+};
+
+const prefix_map = {
+  "766554692": "771",
+  "760232234": "764",
+  "756351453": "760",
+  "752967443": "755",
+  "771349287": "773"
+};
+
+const languages = {
+  US:"en_US", UK:"en_GB", BD:"bn_BD", IN:"hi_IN", FR:"fr_FR", DE:"de_DE", ES:"es_ES"
+};
+
+const screen_scaling = ["2","3"];
+const iabmv_options = ["1"];
+let used_fbrv = new Set();
+let generatedUAs = [];
+
+function populateModels(){
+  const select = document.getElementById("model");
+  for(const [id, [name]] of Object.entries(device_ios_ranges)){
+    const opt = document.createElement("option");
+    opt.value = id;
+    opt.textContent = name;
+    select.appendChild(opt);
+  }
+}
+
+function parseVersion(s){ return s.split(".").map(Number); }
+
+function generateFBRV(fbbv){
+  const prefix = prefix_map[fbbv] || "700";
+  let fbrv;
+  do{
+    fbrv = prefix + Math.floor(Math.random()*900000+100000);
+  }while(used_fbrv.has(fbrv));
+  used_fbrv.add(fbrv);
+  return fbrv;
+}
+
+function generateUA(){
+  const qty = parseInt(document.getElementById("qty").value);
+  const country = document.getElementById("country").value;
+  const modelId = document.getElementById("model").value;
+  const [modelName,minVer,maxVer] = device_ios_ranges[modelId];
+
+  const minV = parseVersion(minVer), maxV=parseVersion(maxVer);
+
+  const output = document.getElementById("output");
+  output.innerHTML = "";
+  generatedUAs = [];
+
+  for(let i=0;i<qty;i++){
+    const iosOptions = ios_versions.filter(v=>{
+      const ver=parseVersion(v[0]);
+      return ver>=minV && ver<=maxV;
+    });
+    const [ios, build, wk] = iosOptions[Math.floor(Math.random()*iosOptions.length)];
+    const fbav = Object.keys(fb_versions)[Math.floor(Math.random()*Object.keys(fb_versions).length)];
+    const fbbv = fb_versions[fbav];
+    const fbrv = generateFBRV(fbbv);
+    const fbss = screen_scaling[Math.floor(Math.random()*screen_scaling.length)];
+    const iabmv = iabmv_options[0];
+    const lang = languages[country] || "en_US";
+
+    const ua=`Mozilla/5.0 (iPhone; CPU iPhone OS ${ios.replace(/\./g,"_")} like Mac OS X) AppleWebKit/${wk} (KHTML, like Gecko) Mobile/${build} [FBAN/FBIOS;FBAV/${fbav};FBBV/${fbbv};FBDV/${modelId};FBMD/iPhone;FBSN/iOS;FBSV/${ios};FBSS/${fbss};FBID/phone;FBLC/${lang};FBOP/5;FBRV/${fbrv};IABMV/${iabmv}]`;
+
+    generatedUAs.push(ua);
+
+    const card = document.createElement("div");
+    card.className="ua-item";
+
+    const btn = document.createElement("button");
+    btn.className="ua-copy-btn";
+    btn.textContent="Copy";
+    btn.onclick=()=>navigator.clipboard.writeText(ua);
+
+    const text=document.createElement("div");
+    text.className="ua-text";
+    text.textContent=ua;
+
+    card.appendChild(btn);
+    card.appendChild(text);
+    output.appendChild(card);
+  }
+}
+
+function copyAll(){
+  if(!generatedUAs.length) return alert("Nothing to copy");
+  navigator.clipboard.writeText(generatedUAs.join("\n"));
+  alert("Copied all ✅");
+}
+
+function exportTXT(){
+  if(!generatedUAs.length) return alert("Nothing to export");
+  const blob = new Blob([generatedUAs.join("\n")], {type:"text/plain"});
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download="facebook_ios_ua.txt";
+  a.click();
+}
+
+populateModels();
+</script>
+
+</body>
+</html>
