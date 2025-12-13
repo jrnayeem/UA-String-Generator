@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Android UA Generator</title>
+<style>
+body {
+  font-family: Arial, sans-serif;
+  background: #020617;
+  color: #fff;
+  margin: 0;
+  padding: 0;
+}
+.container {
+  max-width: 900px;
+  margin: 40px auto;
+  padding: 20px;
+  background: #0f172a;
+  border-radius: 14px;
+}
+h1 {
+  text-align: center;
+  color: #38bdf8;
+}
+a.back {
+  color: #22c55e;
+  text-decoration: none;
+  font-weight: bold;
+  display: inline-block;
+  margin-bottom: 15px;
+}
+select, input, button {
+  width: 100%;
+  margin: 10px 0;
+  padding: 12px;
+  border-radius: 8px;
+  border: none;
+  font-size: 16px;
+}
+button {
+  background: #22c55e;
+  cursor: pointer;
+  font-weight: bold;
+  color: #000;
+}
+.output {
+  margin-top: 15px;
+}
+.ua-item {
+  background: #020617;
+  border: 1px solid #1e293b;
+  padding: 12px;
+  margin-bottom: 10px;
+  border-radius: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.ua-text {
+  word-break: break-all;
+  font-size: 13px;
+  line-height: 1.4;
+  color: #00ff9c;
+}
+.ua-copy-btn {
+  width: 90px;
+}
+.buttons-row {
+  display: flex;
+  gap: 10px;
+}
+.buttons-row button {
+  flex: 1;
+}
+</style>
+</head>
+<body>
+
+<div class="container">
+<a href="index.html" class="back">← Back to Home</a>
+<h1>Android UA Generator</h1>
+
+<label>Select Brand</label>
+<select id="brand">
+  <option value="RANDOM">All Brand</option>
+  <option value="Samsung">Samsung</option>
+  <option value="Pixel">Google Pixel</option>
+  <option value="Xiaomi">Xiaomi / Redmi</option>
+  <option value="Vivo">Vivo</option>
+  <option value="OPPO">OPPO</option>
+  <option value="OnePlus">OnePlus</option>
+  <option value="Realme">Realme</option>
+  <option value="Motorola">Motorola</option>
+</select>
+
+<label>Quantity</label>
+<input type="number" id="qty" value="20" min="1" max="2000">
+
+<div class="buttons-row">
+  <button onclick="generateUA()">Generate</button>
+  <button onclick="copyAll()">Copy All</button>
+  <button onclick="downloadTXT()">Export .txt</button>
+</div>
+
+<div id="output" class="output"></div>
+</div>
+
+<script>
+// ---------------- DEVICE MAP ----------------
+const DEVICES = {
+
+Samsung: {
+    "SM-S921B": [14,15], "SM-S926B": [14,15], "SM-S928B": [14,15], "SM-S911B": [13,14,15], "SM-S916B": [13,14,15], "SM-S918B": [13,14,15],
+    "SM-S901B": [12,13,14,15],
+    "SM-S906B": [12,13,14,15],
+    "SM-S908B": [12,13,14,15],
+    "SM-A546B": [13,14,15],
+    "SM-A536B": [12,13,14,15],
+    "SM-A336B": [12,13,14],
+    "SM-A736B": [13,14,15],
+    "SM-A556B": [13,14,15],
+    "SM-A556E": [13,14,15],
+    "SM-A326B": [13,14],
+    "SM-A326E": [13,14],
+    "SM-A346B": [13,14],
+    "SM-M346B": [13,14,15],
+    "SM-M536B": [12,13,14],
+    "SM-S21FE": [13,14,15]
+},
+
+Pixel: {
+    "Pixel 6": [13,14],
+    "Pixel 6 Pro": [13,14],
+    "Pixel 6a": [13,14],
+    "Pixel 7": [13,14],
+    "Pixel 7 Pro": [13,14],
+    "Pixel 7a": [13,14],
+    "Pixel 8": [14,15],
+    "Pixel 8 Pro": [14,15],
+    "Pixel 8a": [14,15],
+    "Pixel 9": [15],
+    "Pixel 9 Pro": [15]
+},
+Vivo: {
+    "V2207": [12,13,14],
+    "V2302": [13,14],
+    "V2145": [12,13,14],
+    "V2307": [13,14],
+    "V2312": [13,14],
+    "V2314": [13,14],
+    "V2332": [13,14],
+    "V2345": [14,15],
+    "V2342": [14,15],
+    "V2201": [12,13,14]
+},
+
+OPPO: {
+    "Find X5": [12,13,14,15],
+    "Find X5 Pro": [12,13,14,15],
+    "Find X6": [13,14],
+    "Find X6 Pro": [13,14],
+    "Reno 10": [14,15],
+    "Reno 10 Pro": [14,15],
+    "Reno 9": [13,14],
+    "Reno 9 Pro": [13,14],
+    "A77 5G": [13,14,15],
+    "F21 Pro+": [12,13,14,15],
+    "K10 Pro": [12,13,14,15],
+    "K11 Pro": [13,14,15]
+},
+
+OnePlus: {
+    "LE2113": [11,12,13,14,15], "LE2123": [11,12,13,14,15], "LE2101": [11,12,13,14,15],
+    "NE2213": [12,13,14,15], "CPH2413": [12,13,14,15], "CPH2449": [13,14,15],
+    "CPH2573": [14,15], "CPH2581": [14,15],
+    "AC2003": [10,11,12,13,14], "DN2103": [11,12,13,14],
+    "CPH2409": [13,14,15], "CPH2493": [13,14,15]
+},
+
+Xiaomi: {
+    "2201123G": [12,13,14,15], "2201123C": [12,13,14,15], "2201123DG": [12,13,14,15],
+    "2303123AG": [13,14,15], "2303123BG": [13,14,15], "2303123DG": [13,14,15],
+    "2201117SG": [12,13,14], "2201117TI": [12,13,14], "2301133C": [13,14,15],
+    "2301133DG": [13,14,15], "2203123DG": [12,13,14,15], "2304133AG": [13,14,15],
+    "Poco F5": [14,15], "Poco X5 Pro": [13,14,15]
+},
+
+Realme: {
+    "RMX3366": [12,13,14,15], "RMX3368": [12,13,14,15], "RMX4001": [13,14,15],
+    "RMX4021": [13,14,15], "RMX4051": [14,15], "RMX3563": [12,13,14],
+    "RMX3510": [12,13,14], "RMX3801": [13,14,15], "RMX3805": [13,14,15]
+},
+
+Motorola: {
+    "XT2407-1": [12,13,14,15], "XT2407-2": [12,13,14,15], "XT2411-5": [14,15],
+    "XT2421-3": [14,15], "XT2341-1": [13,14,15], "XT2341-2": [13,14,15],
+    "XT2241-1": [12,13,14], "XT2251-1": [12,13,14], "XT2261-1": [13,14,15]
+	
+}
+};
+
+// ---------------- PATCH ENDINGS ----------------
+const PATCH_ENDINGS = [63, 80, 103, 122];
+
+// ---------------- CHROME VERSION ----------------
+function chromeVersion(android){
+  const patch = PATCH_ENDINGS[Math.floor(Math.random()*PATCH_ENDINGS.length)];
+  let major, build;
+
+  if(android <= 13){
+    major = [138,139,140][Math.floor(Math.random()*3)];
+    build = (major === 140) ? 7390 : Math.floor(Math.random()*10000);
+  } else {
+    major = [140,141][Math.floor(Math.random()*2)];
+    build = (major === 140)
+      ? rand(7390,7440)
+      : rand(7441,7445);
+  }
+  return `${major}.0.${build}.${patch}`;
+}
+function rand(a,b){ return Math.floor(Math.random()*(b-a+1))+a }
+
+let generated = [];
+
+// ---------------- GENERATE ----------------
+function generateUA(){
+  const qty = +document.getElementById("qty").value;
+  const brand = document.getElementById("brand").value;
+  const output = document.getElementById("output");
+  output.innerHTML = "";
+  generated = [];
+
+  const brandSelect = document.getElementById("brand").value;
+const brandList = Object.keys(DEVICES);
+
+for(let i=0;i<qty;i++){
+  const brand = (brandSelect === "RANDOM")
+    ? brandList[Math.floor(Math.random()*brandList.length)]
+    : brandSelect;
+
+  const models = Object.keys(DEVICES[brand]);
+  const model = models[Math.floor(Math.random()*models.length)];
+  const android = DEVICES[brand][model][Math.floor(Math.random()*DEVICES[brand][model].length)];
+  const chrome = chromeVersion(android);
+
+  const ua = `Mozilla/5.0 (Linux; Android ${android}; ${model}) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/${chrome} Mobile Safari/537.36`;
+    generated.push(ua);
+
+    const card = document.createElement("div");
+    card.className="ua-item";
+
+    const btn = document.createElement("button");
+    btn.className="ua-copy-btn";
+    btn.textContent="Copy";
+    btn.onclick=()=>navigator.clipboard.writeText(ua);
+
+    const text = document.createElement("div");
+    text.className="ua-text";
+    text.textContent = ua;
+
+    card.appendChild(btn);
+    card.appendChild(text);
+    output.appendChild(card);
+  }
+}
+
+// ---------------- UTIL ----------------
+function copyAll(){
+  if(!generated.length) return alert("Nothing to copy");
+  navigator.clipboard.writeText(generated.join("\n"));
+}
+function downloadTXT(){
+  if(!generated.length) return alert("Nothing to export");
+  const blob = new Blob([generated.join("\n")],{type:"text/plain"});
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = "android_ua.txt";
+  a.click();
+}
+</script>
+
+</body>
+</html>
